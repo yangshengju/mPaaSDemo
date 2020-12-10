@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.hwork.mpaasdemo">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:name = ".HworkApplicationDemo"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- RecvMsgIntentService 是指前文代码中定义的 service -->
+        <service android:name="com.hwork.mpaasdemo.service.PushMsgService"
+            android:exported="false" >
+            <intent-filter>
+                //MESSAGE_RECEIVED 表示处理接收到的消息
+                <action android:name="${applicationId}.push.action.MESSAGE_RECEIVED" />
+                //REGISTRATION_ID 表示处理获取到的设备标识
+                <action android:name="${applicationId}.push.action.REGISTRATION_ID" />
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </service>
+        <!-- 需要配置 alipush appId-->
+        <meta-data
+            android:name="ALIPUSH_APPID"
+            android:value="ONEX99FB626081508-default" />
+        <service
+            android:name="com.alipay.pushsdk.push.NotificationService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":push"
+            android:label="NotificationService">
+            <intent-filter>
+                <action android:name="${applicationId}.push.action.START_PUSHSERVICE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.alipay.pushsdk.push.AppInfoRecvIntentService"
+            android:exported="false"
+            android:process=":push">
+        </service>
+        <receiver
+            android:name="com.alipay.pushsdk.BroadcastActionReceiver"
+            android:enabled="true"
+            android:process=":push">
+            <intent-filter android:priority="2147483647">
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.alipay.mobile.logmonitor.ClientMonitorWakeupReceiver"
+            android:enabled="true"
+            android:process=":push">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="${applicationId}.push.action.CHECK" />
+                <action android:name="${applicationId}.monitor.command" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
